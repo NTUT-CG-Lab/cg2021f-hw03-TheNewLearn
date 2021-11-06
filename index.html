@@ -93,6 +93,8 @@
 		let aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
 		let frustumSize = 30;
 		let camera, camera2, camera3, camera4, camera5;
+		var mouse = { x: 0, y: 0 };
+		var obj;
 
 		Ammo().then(function (AmmoLib) {
 
@@ -136,17 +138,14 @@
 			container.appendChild(renderer.domElement);
 			renderer.autoClear = false;
 			effect = new OutlineEffect(renderer);
-
+			
 			// model
 			function onProgress(xhr) {
-
 				if (xhr.lengthComputable) {
 
 					const percentComplete = xhr.loaded / xhr.total * 100;
 					console.log(Math.round(percentComplete, 2) + '% downloaded');
-
-				}
-
+				}	
 			}
 
 			const modelFile = ['models/mmd/kizunaai/kizunaai.pmx','models/mmd/kokoro/kokoro.pmx'];
@@ -155,13 +154,14 @@
 
 			const loader = new MMDLoader();
 
+			
+			
 			loader.load(modelFile[index], function (object) {
 
 				mesh = object;
 				mesh.position.y = - 10;
 				mesh.name = "kizuaai";
 				scene.add(mesh);
-
 			}, onProgress, null);
 
 			document.onkeypress = function(){
@@ -173,7 +173,7 @@
 				mesh = object;
 				mesh.position.y = - 10;
 				mesh.name = "kizuaai";
-				scene.add(mesh);
+				scene.add(mesh.children);
 
 			}, onProgress, null);
 				}
@@ -191,6 +191,7 @@
 			}, onProgress, null);
 				}
 			}
+			
 			
 			//
 			
@@ -210,7 +211,7 @@
 			line.position.y = vector.y;
 			line.position.x = vector.x;
 			line.position.z = 2;
-			console.log(vector);
+			
 	
 			scene.add(line);
 		}
@@ -230,34 +231,43 @@
 			line.position.y = vector.y + p;
 			line.position.x = vector.x;
 			line.position.z = 2;
-			console.log(vector);
+			
 	
 			scene.add(line);
 		}
 		//左眼上下
 		var result = (jsondata.eyes.左眼上.y - jsondata.eyes.左眼下.y)/4 ;
-		var r = 0; 
+		var r = result; 
 		drawline(jsondata.eyes.左眼下,"#00ff00","左眼下");
-		for(let i=0;i<4;i++){
-			drawline_p(jsondata.eyes.左眼下,"#00ff00",r,"左眼"+i);
+		for(let i=0;i<3;i++){
+			drawline_p(jsondata.eyes.左眼下,"#00ff00",r,"左眼下到上"+i);
 			r += result;
-			console.log(r);
+			
 		}
 		drawline(jsondata.eyes.左眼上,"#00ff00","左眼上");
 		
 
 		//左眼左右
 		var rightresult = (jsondata.eyes.左眼右.x - jsondata.eyes.左眼左.x)/8 ;
-		var buffer = 0;
+		var buffer = rightresult;
 		drawline2(jsondata.eyes.左眼左,"#ff0000","左眼左");
-for(let i=0;i<8;i++){
-			drawline2_p(jsondata.eyes.左眼左,"#ff0000","左眼"+i,buffer);
+for(let i=0;i<7;i++){
+			drawline2_p(jsondata.eyes.左眼左,"#ff0000","左眼左到右"+i,buffer);
 			buffer += rightresult;
-			console.log(buffer);
+			
 		}
 
 		drawline2(jsondata.eyes.左眼右,"#ff0000","左眼右");
 
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 
 
@@ -277,7 +287,7 @@ for(let i=0;i<8;i++){
 			line.position.y = vector.y;
 			line.position.x = vector.x;
 			line.position.z = 2;
-			console.log(vector);
+			
 	
 			scene.add(line);
 		}
@@ -298,7 +308,7 @@ for(let i=0;i<8;i++){
 			line.position.y = vector.y;
 			line.position.x = vector.x + p;
 			line.position.z = 2;
-			console.log(vector);
+			
 	
 			scene.add(line);
 		}
@@ -309,13 +319,65 @@ for(let i=0;i<8;i++){
 				
 
 			window.addEventListener('resize', onWindowResize);
+			window.addEventListener("mousedown",mousedown);
 			//鏡頭控制
+			
 			const cameracontrols = new OrbitControls(camera, renderer.domElement);
 			cameracontrols.minDistance = 10;
 			cameracontrols.maxDistance = 100;
-			cameracontrols.enableRotate = true;
-
+			cameracontrols.enableRotate = false;
+	
 		}
+
+
+		function mousemove(){
+			mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+			console.log("X:",mouse.x,"y:",mouse.y);
+			console.log(event.movementY);
+			console.log(obj.skeleton.bones[86].rotation.x);
+			if(obj!=null){
+				if(event.movementY == 1){
+					obj.skeleton.bones[86].rotation.x = -Math.PI * 0.25;
+				}
+				else if(event.movementY == -1){
+					obj.skeleton.bones[86].rotation.x = (mouse.y);
+				}
+				
+			}
+			
+		}
+
+
+		function mousedown(){
+			if(event.button == 0){
+
+					
+			obj = scene.getObjectByName("kizuaai");
+			window.addEventListener("mouseup",mouseup);
+			window.addEventListener("mousemove",mousemove);
+			obj.angleTo(0,-1,0);
+			console.log(obj);
+				}
+				
+
+			
+				}
+		
+
+		function mouseup(){
+				if(obj!=null){
+				obj.skeleton.bones[86].position.y = obj.skeleton.bones[86].position.y;
+				window.removeEventListener('mousemove',mousemove);
+			}
+			}
+
+		
+			
+				
+			
+			
+		
 
 		function onWindowResize() {
 
