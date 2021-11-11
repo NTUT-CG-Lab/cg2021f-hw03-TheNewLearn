@@ -41,9 +41,9 @@
 			so.addChild("繪製出 5 個畫面", 1, true);
 			so.addChild("回答問題", 1, false);
 			so.addChild("可按鍵選擇上 / 下一隻角色", 1, true);
-			so.addChild("讀取作業 2 儲存的座標點在眼睛上繪製出分割線", 1, false);
-			so.addChild("可選擇當下控制哪個虹膜", 1, false);
-			so.addChild("按滑鼠左鍵控制虹膜移動，右鍵停止", 2, false);
+			so.addChild("讀取作業 2 儲存的座標點在眼睛上繪製出分割線", 1, true);
+			so.addChild("可選擇當下控制哪個虹膜", 1, true);
+			so.addChild("按滑鼠左鍵控制虹膜移動，右鍵停止", 2, true);
 			so.addChild("複製參數至對應目標參數", 2, false);
 			so.addChild("可儲存虹膜轉動角度", 1, false);
 
@@ -84,7 +84,7 @@
 		import { OutlineEffect } from './jsm/effects/OutlineEffect.js';
 		import { MMDLoader } from './jsm/loaders/MMDLoader.js';
 		import { MMDAnimationHelper } from './jsm/animation/MMDAnimationHelper.js';
-		import jsondata from './Eyes_position.json' assert { type: "json" };;
+		import jsondata from './Eyes_position.json' assert { type: "json" };
 
 		let scene, renderer, effect;
 		let mesh, helper;
@@ -162,6 +162,7 @@
 				mesh.position.y = - 10;
 				mesh.name = "kizuaai";
 				scene.add(mesh);
+				console.log(mesh);
 			}, onProgress, null);
 
 			document.onkeypress = function(){
@@ -173,7 +174,8 @@
 				mesh = object;
 				mesh.position.y = - 10;
 				mesh.name = "kizuaai";
-				scene.add(mesh.children);
+				scene.add(mesh);
+				
 
 			}, onProgress, null);
 				}
@@ -190,6 +192,29 @@
 
 			}, onProgress, null);
 				}
+
+				else if(event.key === "1"){
+					//左眼
+					obj = scene.getObjectByName("kizuaai").skeleton.bones[86];
+					console.log(obj.position);
+					var v = new THREE.Vector3();
+					console.log(obj.localToWorld(v));
+					if (obj != null){
+		var gui = new GUI(); 
+		function setgui(){
+			let folder = gui.addFolder("Eyes");
+			folder.add(obj.rotation,"x", -0.25,0.25 );
+		}
+
+		setgui();
+	}
+				}
+				else if(event.key === "2"){
+					//右眼
+					obj =scene.getObjectByName("kizuaai").skeleton.bones[88];
+					console.log(obj);
+				}
+
 			}
 			
 			
@@ -266,8 +291,6 @@ for(let i=0;i<7;i++){
 		
 		
 		
-		
-		
 
 
 
@@ -319,7 +342,7 @@ for(let i=0;i<7;i++){
 				
 
 			window.addEventListener('resize', onWindowResize);
-			window.addEventListener("mousedown",mousedown);
+			//window.addEventListener("mousedown",mousedown);
 			//鏡頭控制
 			
 			const cameracontrols = new OrbitControls(camera, renderer.domElement);
@@ -333,15 +356,12 @@ for(let i=0;i<7;i++){
 		function mousemove(){
 			mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-			console.log("X:",mouse.x,"y:",mouse.y);
-			console.log(event.movementY);
-			console.log(obj.skeleton.bones[86].rotation.x);
 			if(obj!=null){
 				if(event.movementY == 1){
-					obj.skeleton.bones[86].rotation.x = -Math.PI * 0.25;
+					obj.rotation.x = -0.001;
 				}
 				else if(event.movementY == -1){
-					obj.skeleton.bones[86].rotation.x = (mouse.y);
+					obj.rotation.x = (mouse.y);
 				}
 				
 			}
@@ -349,15 +369,18 @@ for(let i=0;i<7;i++){
 		}
 
 
+
+
 		function mousedown(){
 			if(event.button == 0){
 
 					
-			obj = scene.getObjectByName("kizuaai");
 			window.addEventListener("mouseup",mouseup);
 			window.addEventListener("mousemove",mousemove);
-			obj.angleTo(0,-1,0);
-			console.log(obj);
+			
+				}
+				else if(event.button == 2){
+					obj = null;
 				}
 				
 
@@ -367,14 +390,14 @@ for(let i=0;i<7;i++){
 
 		function mouseup(){
 				if(obj!=null){
-				obj.skeleton.bones[86].position.y = obj.skeleton.bones[86].position.y;
+				obj.position.y = obj.position.y;
 				window.removeEventListener('mousemove',mousemove);
 			}
 			}
 
 		
 			
-				
+			
 			
 			
 		
