@@ -214,27 +214,8 @@
 				else if (event.key === "1") {
 					//左眼
 					obj = scene.getObjectByName("kizuaai").skeleton.bones[86];
-					var v1 = new THREE.Vector3(0, scene.getObjectByName("左眼下到上0").position.y, 0);
-					var v2 = new THREE.Vector3(0, scene.getObjectByName("左眼下到上2").position.y, 0);
+					totalline(jsondata.eyes.左眼上,jsondata.eyes.左眼下,jsondata.eyes.左眼右,jsondata.eyes.左眼左);
 					
-					console.log(obj.position);
-					var v = new THREE.Vector3();
-					console.log(obj.localToWorld(v));
-					if (obj != null) {
-						var gui = new GUI();
-						function setgui() {
-							let folder = gui.addFolder("Eyes");
-							folder.add(obj.rotation, "x", -0.25, 0.25);
-						}
-						obj.rotation.set(0,0,0);
-						console.log(obj.rotation);
-
-
-
-
-
-						setgui();
-					}
 				}
 				else if (event.key === "2") {
 					//右眼
@@ -290,33 +271,33 @@
 
 
 
-			function totalline(){
+			function totalline(t,b,r,l){
 			//左眼上下
 
 
 
-			var result = (jsondata.eyes.左眼上.y - jsondata.eyes.左眼下.y) / 4;
+			var result = (t.y - b.y) / 4;
 			var r = result;
-			drawline(jsondata.eyes.左眼下, "#00ff00", "左眼下");
+			drawline(b, "#00ff00", "左眼下");
 			for (let i = 0; i < 3; i++) {
-				drawline_p(jsondata.eyes.左眼下, "#00ff00", r, "左眼下到上" + i);
+				drawline_p(b, "#00ff00", r, "左眼下到上" + i);
 				r += result;
 
 			}
-			drawline(jsondata.eyes.左眼上, "#00ff00", "左眼上");
+			drawline(t, "#00ff00", "左眼上");
 
 
 			//左眼左右
-			var rightresult = (jsondata.eyes.左眼右.x - jsondata.eyes.左眼左.x) / 8;
+			var rightresult = (r.x - l.x) / 8;
 			var buffer = rightresult;
-			drawline2(jsondata.eyes.左眼左, "#ff0000", "左眼左");
+			drawline2(l, "#ff0000", "左眼左");
 			for (let i = 0; i < 7; i++) {
-				drawline2_p(jsondata.eyes.左眼左, "#ff0000", "左眼左到右" + i, buffer);
+				drawline2_p(l, "#ff0000", "左眼左到右" + i, buffer);
 				buffer += rightresult;
 
 			}
 
-			drawline2(jsondata.eyes.左眼右, "#ff0000", "左眼右");
+			drawline2(r, "#ff0000", "左眼右");
 		}
 
 
