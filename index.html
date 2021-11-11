@@ -39,7 +39,7 @@
 			//有幾個項目就呼叫幾個 addChild
 			//addChild 要比 renderModal 先呼叫
 			so.addChild("繪製出 5 個畫面", 1, true);
-			so.addChild("回答問題", 1, false);
+			so.addChild("回答問題", 1, true);
 			so.addChild("可按鍵選擇上 / 下一隻角色", 1, true);
 			so.addChild("讀取作業 2 儲存的座標點在眼睛上繪製出分割線", 1, true);
 			so.addChild("可選擇當下控制哪個虹膜", 1, true);
@@ -107,9 +107,9 @@
 		});
 
 		function init() {
-			const eyesarray = [[],[],[],[]];
-			
-			
+			const eyesarray = [[], [], [], []];
+
+
 
 			const container = document.createElement('div');
 			document.body.appendChild(container);
@@ -123,7 +123,7 @@
 			camera2.position.set(-0.024041540293662254, 8.34441875268766, 30);
 			camera2.zoom = 7;
 			camera2.updateProjectionMatrix();
-			
+
 			camera3.position.set(-0.024041540293662254, 8.34441875268766, 30);
 			camera3.zoom = 7;
 			camera3.updateProjectionMatrix();
@@ -135,7 +135,7 @@
 			camera5.position.set(-0.024041540293662254, 8.34441875268766, 30);
 			camera5.zoom = 7;
 			camera5.updateProjectionMatrix();
-			
+
 
 
 			//camera3.position.z = 30;
@@ -218,81 +218,80 @@
 				else if (event.key === "1") {
 					//左眼
 					obj = scene.getObjectByName("kizuaai").skeleton.bones[86];
-					if(eyeindex>0)
-					{
-						eyeindex -=1;
+					if (eyeindex > 0) {
+						eyeindex -= 1;
 					}
 
-					
+
 				}
 				else if (event.key === "2") {
 					//右眼
 					obj = scene.getObjectByName("kizuaai").skeleton.bones[86];
-					if(eyeindex<4){
-						eyeindex+=1;
+					if (eyeindex < 4) {
+						eyeindex += 1;
 					}
 				}
-				else if(event.key === "q"){
-					if(obj == scene.getObjectByName("kizuaai").skeleton.bones[86] ){
+				else if (event.key === "q") {
+					if (obj == scene.getObjectByName("kizuaai").skeleton.bones[86]) {
 						var othereyes = scene.getObjectByName("kizuaai").skeleton.bones[88];
 						othereyes.rotation.x = obj.rotation.x;
 						othereyes.rotation.y = obj.rotation.y;
-						if(eyeindex == 0){
+						if (eyeindex == 0) {
 							eyesarray[eyeindex][0] = othereyes.rotation.x;
-						eyesarray[eyeindex][1] = obj.rotation.x;
+							eyesarray[eyeindex][1] = obj.rotation.x;
 						}
-						else if(eyeindex == 1){
+						else if (eyeindex == 1) {
 							eyesarray[eyeindex][0] = othereyes.rotation.x;
-						eyesarray[eyeindex][1] = obj.rotation.x;
+							eyesarray[eyeindex][1] = obj.rotation.x;
 						}
-						else if(eyeindex == 2){
+						else if (eyeindex == 2) {
 							eyesarray[eyeindex][0] = othereyes.rotation.y;
-						eyesarray[eyeindex][1] = obj.rotation.y;
+							eyesarray[eyeindex][1] = obj.rotation.y;
 						}
-						else if(eyeindex == 3){
+						else if (eyeindex == 3) {
 							eyesarray[eyeindex][0] = othereyes.rotation.y;
-						eyesarray[eyeindex][1] = obj.rotation.y;
+							eyesarray[eyeindex][1] = obj.rotation.y;
 						}
 
-						
+
 						console.log(eyesarray);
 					}
-					
+
 				}
-				else if(event.key === "s"){
-					if(eyesarray[0].length != 0 && eyesarray[1].length != 0 && eyesarray[2].length != 0 && eyesarray[3].length != 0){
-						var jsobj = {"negative_angle":{},"positive_angle":{}};
+				else if (event.key === "s") {
+					if (eyesarray[0].length != 0 && eyesarray[1].length != 0 && eyesarray[2].length != 0 && eyesarray[3].length != 0) {
+						var jsobj = { "negative_angle": {}, "positive_angle": {} };
 						var name1 = "right_X";
 						var name2 = "left_X";
-						for(let i=0;i<eyesarray.length;i++){
-								if(i>1){
-									name1 = "right_Y";
-									name2 = "left_Y";
-								}
-								
-								if(i%2 == 0){
-									jsobj.negative_angle[name1] = eyesarray[i][0];
-									jsobj.negative_angle[name2] = eyesarray[i][1];
-								}
-								else{
-									jsobj.positive_angle[name1] = eyesarray[i][0];
-									jsobj.positive_angle[name2] = eyesarray[i][1];
-								}
-							
+						for (let i = 0; i < eyesarray.length; i++) {
+							if (i > 1) {
+								name1 = "right_Y";
+								name2 = "left_Y";
+							}
+
+							if (i % 2 == 0) {
+								jsobj.negative_angle[name1] = eyesarray[i][0];
+								jsobj.negative_angle[name2] = eyesarray[i][1];
+							}
+							else {
+								jsobj.positive_angle[name1] = eyesarray[i][0];
+								jsobj.positive_angle[name2] = eyesarray[i][1];
+							}
+
 						}
 						var json = JSON.stringify(jsobj);
-						var file = new Blob([json],{type:"text/plain;charset=utf-8"});
-						if (navigator.msSaveBlob) { 
-  navigator.msSaveBlob(file,"Eyes_position.json");
- } else {
-  
-  const link = document.createElement('a');
-  link.href = window.URL.createObjectURL(file);
-  link.setAttribute('download', "Eyes_position.json");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
- }
+						var file = new Blob([json], { type: "text/plain;charset=utf-8" });
+						if (navigator.msSaveBlob) {
+							navigator.msSaveBlob(file, "Eyes_position.json");
+						} else {
+
+							const link = document.createElement('a');
+							link.href = window.URL.createObjectURL(file);
+							link.setAttribute('download', "Eyes_position.json");
+							document.body.appendChild(link);
+							link.click();
+							document.body.removeChild(link);
+						}
 					}
 				}
 
@@ -343,7 +342,7 @@
 			}
 
 
-			
+
 			//左眼上下
 
 
@@ -444,51 +443,51 @@
 			mouse.x = event.clientX;
 			mouse.y = event.clientY;
 			if (obj != null) {
-				
 
-				if (eyeindex == 0 || eyeindex == 1){
+
+				if (eyeindex == 0 || eyeindex == 1) {
 					if (event.movementY == 1) {
 
-						if(obj.rotation.x<0.155500005){
+						if (obj.rotation.x < 0.155500005) {
 							obj.rotation.y = 0;
 							obj.rotation.x += 0.005;
 						}
-						
-					
-					
 
-				}
-				else if (event.movementY == -1) {
-				
-					if(obj.rotation.x> -0.18){
-						obj.rotation.y = 0;
+
+
+
+					}
+					else if (event.movementY == -1) {
+
+						if (obj.rotation.x > -0.18) {
+							obj.rotation.y = 0;
 							obj.rotation.x -= 0.005;
 						}
-					
-					
+
+
+					}
 				}
+				else if (eyeindex == 2 || eyeindex == 3) {
+					if (event.movementX == 1) {
+						if (obj.rotation.y < 0.225000000) {
+							obj.rotation.x = 0;
+							obj.rotation.y += 0.005;
+						}
+
+					}
+					else if (event.movementX == -1) {
+						if (obj.rotation.y > -0.1400000000004) {
+							obj.rotation.x = 0;
+							obj.rotation.y -= 0.005;
+						}
+
+					}
 				}
-				else if(eyeindex == 2 || eyeindex == 3){
-					if(event.movementX == 1){
-										if(obj.rotation.y<0.225000000){
-										obj.rotation.x = 0;	
-										obj.rotation.y+= 0.005;
-										}
-										
-									}
-									else if(event.movementX == -1){
-										if(obj.rotation.y> -0.1400000000004){
-										obj.rotation.x = 0;		
-										obj.rotation.y-= 0.005;
-										}
-										
-									}
-				}
-				
-				 
+
+
 
 				console.log(obj.rotation);
-				
+
 			}
 
 		}
@@ -545,14 +544,14 @@
 			camera.bottom = - frustumSize / 2;
 			camera.updateProjectionMatrix();
 
-			
+
 
 			camera2.left = 0.25 * frustumSize * aspect / - 2;
 			camera2.right = 0.25 * frustumSize * aspect / 2;
 			camera2.top = 0.5 * frustumSize / 2;
 			camera2.bottom = - 0.5 * frustumSize / 2;
 			camera2.updateProjectionMatrix();
-			
+
 			camera3.left = 0.25 * frustumSize * aspect / - 2;
 			camera3.right = 0.25 * frustumSize * aspect / 2;
 			camera3.top = 0.5 * frustumSize / 2;
@@ -590,7 +589,7 @@
 
 			effect.setViewport(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera2);
-			
+
 			effect.setViewport(SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera3);
 
