@@ -23,11 +23,11 @@
 
 	<script src="js/libs/ammo.wasm.js"></script>
 	<script src="scoreoutputer.min.js"></script>
-	
+
 	<script>
 		// 建構子 ScoreOutputer 接受一個字串，該字串為 csv 的檔案名稱
 		// 以下面範例，檔名就為 "109598105(總分: 6).csv"
-		var so = new ScoreOutputer("109598105");
+		var so = new ScoreOutputer("109aem001");
 		so.installCSS(function () {
 			// 安裝 bootstrap 的 css，如果在 html 上方引用 bootstrap 5.1.1 的話就不用使用 installCSS ，注意一定要 bootstrap css 5.1.1 版
 			// installCSS 接收一個 callback 當作參數，作為成功安裝 bootstrap css 的回呼函式
@@ -75,7 +75,7 @@
 			);
 		});
 	</script>
-	
+
 	<script type="module">
 
 		import * as THREE from './build/three.module.js';
@@ -115,10 +115,28 @@
 			camera4 = new THREE.OrthographicCamera(0.25 * frustumSize * aspect / - 2, 0.25 * frustumSize * aspect / 2, 0.5 * frustumSize / 2, 0.5 * frustumSize / - 2, 0.1, 1000);
 			camera5 = new THREE.OrthographicCamera(0.25 * frustumSize * aspect / - 2, 0.25 * frustumSize * aspect / 2, 0.5 * frustumSize / 2, 0.5 * frustumSize / - 2, 0.1, 1000);
 			camera.position.z = 30;
-			camera2.position.z = 30;
-			camera3.position.z = 30;
-			camera4.position.z = 30;
-			camera5.position.z = 30;
+			//camera2.position.z = 30;
+			camera2.position.set(-0.024041540293662254, 8.34441875268766, 30);
+			camera2.zoom = 7;
+			camera2.updateProjectionMatrix();
+			
+			camera3.position.set(-0.024041540293662254, 8.34441875268766, 30);
+			camera3.zoom = 7;
+			camera3.updateProjectionMatrix();
+
+			camera4.position.set(-0.024041540293662254, 8.34441875268766, 30);
+			camera4.zoom = 7;
+			camera4.updateProjectionMatrix();
+
+			camera5.position.set(-0.024041540293662254, 8.34441875268766, 30);
+			camera5.zoom = 7;
+			camera5.updateProjectionMatrix();
+			
+
+
+			//camera3.position.z = 30;
+			//camera4.position.z = 30;
+			//camera5.position.z = 30;
 
 			// scene
 
@@ -138,24 +156,24 @@
 			container.appendChild(renderer.domElement);
 			renderer.autoClear = false;
 			effect = new OutlineEffect(renderer);
-			
+
 			// model
 			function onProgress(xhr) {
 				if (xhr.lengthComputable) {
 
 					const percentComplete = xhr.loaded / xhr.total * 100;
 					console.log(Math.round(percentComplete, 2) + '% downloaded');
-				}	
+				}
 			}
 
-			const modelFile = ['models/mmd/kizunaai/kizunaai.pmx','models/mmd/kokoro/kokoro.pmx'];
+			const modelFile = ['models/mmd/kizunaai/kizunaai.pmx', 'models/mmd/kokoro/kokoro.pmx'];
 			var index = 0;
 			helper = new MMDAnimationHelper();
 
 			const loader = new MMDLoader();
 
-			
-			
+
+
 			loader.load(modelFile[index], function (object) {
 
 				mesh = object;
@@ -165,242 +183,276 @@
 				console.log(mesh);
 			}, onProgress, null);
 
-			document.onkeypress = function(){
-				if (event.key === "a" && index == 1){
+			document.onkeypress = function () {
+				if (event.key === "a" && index == 1) {
 					scene.remove(mesh);
 					index -= 1;
 					loader.load(modelFile[index], function (object) {
 
-				mesh = object;
-				mesh.position.y = - 10;
-				mesh.name = "kizuaai";
-				scene.add(mesh);
-				
+						mesh = object;
+						mesh.position.y = - 10;
+						mesh.name = "kizuaai";
+						scene.add(mesh);
 
-			}, onProgress, null);
+
+					}, onProgress, null);
 				}
 
-				else if(event.key === "d" && index === 0){
+				else if (event.key === "d" && index === 0) {
 					scene.remove(mesh);
 					index += 1;
 					loader.load(modelFile[index], function (object) {
 
-				mesh = object;
-				mesh.position.y = - 10;
-				mesh.name = "kokoro";
-				scene.add(mesh);
+						mesh = object;
+						mesh.position.y = - 10;
+						mesh.name = "kokoro";
+						scene.add(mesh);
 
-			}, onProgress, null);
+					}, onProgress, null);
 				}
 
-				else if(event.key === "1"){
+				else if (event.key === "1") {
 					//左眼
 					obj = scene.getObjectByName("kizuaai").skeleton.bones[86];
+					var v1 = new THREE.Vector3(0, scene.getObjectByName("左眼下到上0").position.y, 0);
+					var v2 = new THREE.Vector3(0, scene.getObjectByName("左眼下到上2").position.y, 0);
+					
 					console.log(obj.position);
 					var v = new THREE.Vector3();
 					console.log(obj.localToWorld(v));
-					if (obj != null){
-		var gui = new GUI(); 
-		function setgui(){
-			let folder = gui.addFolder("Eyes");
-			folder.add(obj.rotation,"x", -0.25,0.25 );
-		}
+					if (obj != null) {
+						var gui = new GUI();
+						function setgui() {
+							let folder = gui.addFolder("Eyes");
+							folder.add(obj.rotation, "x", -0.25, 0.25);
+						}
+						obj.rotation.set(0,0,0);
+						console.log(obj.rotation);
 
-		setgui();
-	}
+
+
+
+
+						setgui();
+					}
 				}
-				else if(event.key === "2"){
+				else if (event.key === "2") {
 					//右眼
-					obj =scene.getObjectByName("kizuaai").skeleton.bones[88];
+					obj = scene.getObjectByName("kizuaai").skeleton.bones[88];
 					console.log(obj);
 				}
 
 			}
-			
-			
+
+
 			//
-			
-			function drawline(vector,color,name) {
-			
-			var material = new THREE.LineBasicMaterial({ color: color });
-			var geometry = new THREE.BufferGeometry();
 
-			const points = [];
-			points.push(new THREE.Vector3(-0.5, 0, 0));
-			points.push(new THREE.Vector3(1, 0, 0));
+			function drawline(vector, color, name) {
 
-			geometry.setFromPoints(points);
-			var line = new THREE.Line(geometry, material);
-			
-			line.name = name;
-			line.position.y = vector.y;
-			line.position.x = vector.x;
-			line.position.z = 2;
-			
-	
-			scene.add(line);
+				var material = new THREE.LineBasicMaterial({ color: color });
+				var geometry = new THREE.BufferGeometry();
+
+				const points = [];
+				points.push(new THREE.Vector3(-0.5, 0, 0));
+				points.push(new THREE.Vector3(1, 0, 0));
+
+				geometry.setFromPoints(points);
+				var line = new THREE.Line(geometry, material);
+
+				line.name = name;
+				line.position.y = vector.y;
+				line.position.x = vector.x;
+				line.position.z = 2;
+
+
+				scene.add(line);
+			}
+
+			function drawline_p(vector, color, p, name) {
+
+				var material = new THREE.LineBasicMaterial({ color: color });
+				var geometry = new THREE.BufferGeometry();
+
+				const points = [];
+				points.push(new THREE.Vector3(-0.5, 0, 0));
+				points.push(new THREE.Vector3(1, 0, 0));
+
+				geometry.setFromPoints(points);
+				var line = new THREE.Line(geometry, material);
+				line.name = name;
+				line.position.y = vector.y + p;
+				line.position.x = vector.x;
+				line.position.z = 2;
+
+
+				scene.add(line);
+			}
+
+
+
+			function totalline(){
+			//左眼上下
+
+
+
+			var result = (jsondata.eyes.左眼上.y - jsondata.eyes.左眼下.y) / 4;
+			var r = result;
+			drawline(jsondata.eyes.左眼下, "#00ff00", "左眼下");
+			for (let i = 0; i < 3; i++) {
+				drawline_p(jsondata.eyes.左眼下, "#00ff00", r, "左眼下到上" + i);
+				r += result;
+
+			}
+			drawline(jsondata.eyes.左眼上, "#00ff00", "左眼上");
+
+
+			//左眼左右
+			var rightresult = (jsondata.eyes.左眼右.x - jsondata.eyes.左眼左.x) / 8;
+			var buffer = rightresult;
+			drawline2(jsondata.eyes.左眼左, "#ff0000", "左眼左");
+			for (let i = 0; i < 7; i++) {
+				drawline2_p(jsondata.eyes.左眼左, "#ff0000", "左眼左到右" + i, buffer);
+				buffer += rightresult;
+
+			}
+
+			drawline2(jsondata.eyes.左眼右, "#ff0000", "左眼右");
 		}
 
-		function drawline_p(vector,color,p,name) {
-			
-			var material = new THREE.LineBasicMaterial({ color: color });
-			var geometry = new THREE.BufferGeometry();
-
-			const points = [];
-			points.push(new THREE.Vector3(-0.5, 0, 0));
-			points.push(new THREE.Vector3(1, 0, 0));
-
-			geometry.setFromPoints(points);
-			var line = new THREE.Line(geometry, material);
-			line.name = name;
-			line.position.y = vector.y + p;
-			line.position.x = vector.x;
-			line.position.z = 2;
-			
-	
-			scene.add(line);
-		}
-		//左眼上下
-		var result = (jsondata.eyes.左眼上.y - jsondata.eyes.左眼下.y)/4 ;
-		var r = result; 
-		drawline(jsondata.eyes.左眼下,"#00ff00","左眼下");
-		for(let i=0;i<3;i++){
-			drawline_p(jsondata.eyes.左眼下,"#00ff00",r,"左眼下到上"+i);
-			r += result;
-			
-		}
-		drawline(jsondata.eyes.左眼上,"#00ff00","左眼上");
-		
-
-		//左眼左右
-		var rightresult = (jsondata.eyes.左眼右.x - jsondata.eyes.左眼左.x)/8 ;
-		var buffer = rightresult;
-		drawline2(jsondata.eyes.左眼左,"#ff0000","左眼左");
-for(let i=0;i<7;i++){
-			drawline2_p(jsondata.eyes.左眼左,"#ff0000","左眼左到右"+i,buffer);
-			buffer += rightresult;
-			
-		}
-
-		drawline2(jsondata.eyes.左眼右,"#ff0000","左眼右");
-
-		
-		
-		
-		
-		
-		
-		
 
 
 
-		function drawline2(vector,color,name) {
-			
-			var material = new THREE.LineBasicMaterial({ color: color });
-			var geometry = new THREE.BufferGeometry();
 
-			const points = [];
-			points.push(new THREE.Vector3(0, -0.5, 0));
-			points.push(new THREE.Vector3(0, 1, 0));
 
-			geometry.setFromPoints(points);
-			var line = new THREE.Line(geometry, material);
-			
-			line.name = name;
-			line.position.y = vector.y;
-			line.position.x = vector.x;
-			line.position.z = 2;
-			
-	
-			scene.add(line);
-		}
 
-		function drawline2_p(vector,color,name,p) {
-			
-			var material = new THREE.LineBasicMaterial({ color: color });
-			var geometry = new THREE.BufferGeometry();
 
-			const points = [];
-			points.push(new THREE.Vector3(0, -0.5, 0));
-			points.push(new THREE.Vector3(0, 1, 0));
 
-			geometry.setFromPoints(points);
-			var line = new THREE.Line(geometry, material);
-			
-			line.name = name;
-			line.position.y = vector.y;
-			line.position.x = vector.x + p;
-			line.position.z = 2;
-			
-	
-			scene.add(line);
-		}
-			
-			
-			
-			
-				
+
+			function drawline2(vector, color, name) {
+
+				var material = new THREE.LineBasicMaterial({ color: color });
+				var geometry = new THREE.BufferGeometry();
+
+				const points = [];
+				points.push(new THREE.Vector3(0, -0.5, 0));
+				points.push(new THREE.Vector3(0, 1, 0));
+
+				geometry.setFromPoints(points);
+				var line = new THREE.Line(geometry, material);
+
+				line.name = name;
+				line.position.y = vector.y;
+				line.position.x = vector.x;
+				line.position.z = 2;
+
+
+				scene.add(line);
+			}
+
+			function drawline2_p(vector, color, name, p) {
+
+				var material = new THREE.LineBasicMaterial({ color: color });
+				var geometry = new THREE.BufferGeometry();
+
+				const points = [];
+				points.push(new THREE.Vector3(0, -0.5, 0));
+				points.push(new THREE.Vector3(0, 1, 0));
+
+				geometry.setFromPoints(points);
+				var line = new THREE.Line(geometry, material);
+
+				line.name = name;
+				line.position.y = vector.y;
+				line.position.x = vector.x + p;
+				line.position.z = 2;
+
+
+				scene.add(line);
+			}
+
+
+
+
+
 
 			window.addEventListener('resize', onWindowResize);
-			//window.addEventListener("mousedown",mousedown);
+			window.addEventListener("mousedown", mousedown);
 			//鏡頭控制
-			
+
 			const cameracontrols = new OrbitControls(camera, renderer.domElement);
 			cameracontrols.minDistance = 10;
 			cameracontrols.maxDistance = 100;
 			cameracontrols.enableRotate = false;
-	
+
 		}
 
 
-		function mousemove(){
-			mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-			if(obj!=null){
-				if(event.movementY == 1){
-					obj.rotation.x = -0.001;
-				}
-				else if(event.movementY == -1){
-					obj.rotation.x = (mouse.y);
-				}
-				
-			}
+		function mousemove() {
+			mouse.x = event.clientX;
+			mouse.y = event.clientY;
+			if (obj != null) {
 			
-		}
+				if (event.movementY == 1) {
 
-
-
-
-		function mousedown(){
-			if(event.button == 0){
-
+						if(obj.rotation.x<0.155500005){
+							obj.rotation.x += 0.005;
+						}
+						
 					
-			window.addEventListener("mouseup",mouseup);
-			window.addEventListener("mousemove",mousemove);
-			
+					
+
 				}
-				else if(event.button == 2){
-					obj = null;
-				}
+				else if (event.movementY == -1) {
 				
-
-			
+					if(obj.rotation.x> -0.18){
+							obj.rotation.x -= 0.005;
+						}
+					
+					
 				}
-		
+				console.log(obj.rotation);
+				
+			}
 
-		function mouseup(){
-				if(obj!=null){
+		}
+
+
+
+
+		function mousedown() {
+			if (event.button == 0) {
+
+				if (obj != null) {
+					window.addEventListener("mouseup", mouseup);
+					window.addEventListener("mousemove", mousemove);
+				}
+
+			}
+			else if (event.button == 2) {
+				if (obj != null) {
+					obj = null;
+
+				}
+			}
+
+
+
+		}
+
+
+		function mouseup() {
+			if (obj != null) {
 				obj.position.y = obj.position.y;
-				window.removeEventListener('mousemove',mousemove);
+				window.removeEventListener('mousemove', mousemove);
 			}
-			}
+		}
 
-		
-			
-			
-			
-			
-		
+
+
+
+
+
+
 
 		function onWindowResize() {
 
@@ -416,12 +468,14 @@ for(let i=0;i<7;i++){
 			camera.bottom = - frustumSize / 2;
 			camera.updateProjectionMatrix();
 
+			
+
 			camera2.left = 0.25 * frustumSize * aspect / - 2;
 			camera2.right = 0.25 * frustumSize * aspect / 2;
 			camera2.top = 0.5 * frustumSize / 2;
 			camera2.bottom = - 0.5 * frustumSize / 2;
 			camera2.updateProjectionMatrix();
-
+			
 			camera3.left = 0.25 * frustumSize * aspect / - 2;
 			camera3.right = 0.25 * frustumSize * aspect / 2;
 			camera3.top = 0.5 * frustumSize / 2;
@@ -459,7 +513,7 @@ for(let i=0;i<7;i++){
 
 			effect.setViewport(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera2);
-
+			
 			effect.setViewport(SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2);
 			effect.render(scene, camera3);
 
