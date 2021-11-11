@@ -44,8 +44,8 @@
 			so.addChild("讀取作業 2 儲存的座標點在眼睛上繪製出分割線", 1, true);
 			so.addChild("可選擇當下控制哪個虹膜", 1, true);
 			so.addChild("按滑鼠左鍵控制虹膜移動，右鍵停止", 2, true);
-			so.addChild("複製參數至對應目標參數", 2, false);
-			so.addChild("可儲存虹膜轉動角度", 1, false);
+			so.addChild("複製參數至對應目標參數", 2, true);
+			so.addChild("可儲存虹膜轉動角度", 1, true);
 
 			//產生自評表，參數如下所示
 			so.renderModal(
@@ -95,6 +95,7 @@
 		let camera, camera2, camera3, camera4, camera5;
 		var mouse = { x: 0, y: 0 };
 		var obj;
+		var eyeindex = 0;
 
 		Ammo().then(function (AmmoLib) {
 
@@ -106,6 +107,9 @@
 		});
 
 		function init() {
+			const eyesarray = [[],[],[],[]];
+			
+			
 
 			const container = document.createElement('div');
 			document.body.appendChild(container);
@@ -214,13 +218,82 @@
 				else if (event.key === "1") {
 					//左眼
 					obj = scene.getObjectByName("kizuaai").skeleton.bones[86];
-					totalline(jsondata.eyes.左眼上,jsondata.eyes.左眼下,jsondata.eyes.左眼右,jsondata.eyes.左眼左);
+					if(eyeindex>0)
+					{
+						eyeindex -=1;
+					}
+
 					
 				}
 				else if (event.key === "2") {
 					//右眼
-					obj = scene.getObjectByName("kizuaai").skeleton.bones[88];
-					console.log(obj);
+					obj = scene.getObjectByName("kizuaai").skeleton.bones[86];
+					if(eyeindex<4){
+						eyeindex+=1;
+					}
+				}
+				else if(event.key === "q"){
+					if(obj == scene.getObjectByName("kizuaai").skeleton.bones[86] ){
+						var othereyes = scene.getObjectByName("kizuaai").skeleton.bones[88];
+						othereyes.rotation.x = obj.rotation.x;
+						othereyes.rotation.y = obj.rotation.y;
+						if(eyeindex == 0){
+							eyesarray[eyeindex][0] = othereyes.rotation.x;
+						eyesarray[eyeindex][1] = obj.rotation.x;
+						}
+						else if(eyeindex == 1){
+							eyesarray[eyeindex][0] = othereyes.rotation.x;
+						eyesarray[eyeindex][1] = obj.rotation.x;
+						}
+						else if(eyeindex == 2){
+							eyesarray[eyeindex][0] = othereyes.rotation.y;
+						eyesarray[eyeindex][1] = obj.rotation.y;
+						}
+						else if(eyeindex == 3){
+							eyesarray[eyeindex][0] = othereyes.rotation.y;
+						eyesarray[eyeindex][1] = obj.rotation.y;
+						}
+
+						
+						console.log(eyesarray);
+					}
+					
+				}
+				else if(event.key === "s"){
+					if(eyesarray[0].length != 0 && eyesarray[1].length != 0 && eyesarray[2].length != 0 && eyesarray[3].length != 0){
+						var jsobj = {"negative_angle":{},"positive_angle":{}};
+						var name1 = "right_X";
+						var name2 = "left_X";
+						for(let i=0;i<eyesarray.length;i++){
+								if(i>1){
+									name1 = "right_Y";
+									name2 = "left_Y";
+								}
+								
+								if(i%2 == 0){
+									jsobj.negative_angle[name1] = eyesarray[i][0];
+									jsobj.negative_angle[name2] = eyesarray[i][1];
+								}
+								else{
+									jsobj.positive_angle[name1] = eyesarray[i][0];
+									jsobj.positive_angle[name2] = eyesarray[i][1];
+								}
+							
+						}
+						var json = JSON.stringify(jsobj);
+						var file = new Blob([json],{type:"text/plain;charset=utf-8"});
+						if (navigator.msSaveBlob) { 
+  navigator.msSaveBlob(file,"Eyes_position.json");
+ } else {
+  
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(file);
+  link.setAttribute('download', "Eyes_position.json");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+ }
+					}
 				}
 
 			}
@@ -270,35 +343,34 @@
 			}
 
 
-
-			function totalline(t,b,r,l){
+			
 			//左眼上下
 
 
 
-			var result = (t.y - b.y) / 4;
+			var result = (jsondata.eyes.左眼上.y - jsondata.eyes.左眼下.y) / 4;
 			var r = result;
-			drawline(b, "#00ff00", "左眼下");
+			drawline(jsondata.eyes.左眼下, "#00ff00", "左眼下");
 			for (let i = 0; i < 3; i++) {
-				drawline_p(b, "#00ff00", r, "左眼下到上" + i);
+				drawline_p(jsondata.eyes.左眼下, "#00ff00", r, "左眼下到上" + i);
 				r += result;
 
 			}
-			drawline(t, "#00ff00", "左眼上");
+			drawline(jsondata.eyes.左眼上, "#00ff00", "左眼上");
 
 
 			//左眼左右
-			var rightresult = (r.x - l.x) / 8;
+			var rightresult = (jsondata.eyes.左眼右.x - jsondata.eyes.左眼左.x) / 8;
 			var buffer = rightresult;
-			drawline2(l, "#ff0000", "左眼左");
+			drawline2(jsondata.eyes.左眼左, "#ff0000", "左眼左");
 			for (let i = 0; i < 7; i++) {
-				drawline2_p(l, "#ff0000", "左眼左到右" + i, buffer);
+				drawline2_p(jsondata.eyes.左眼左, "#ff0000", "左眼左到右" + i, buffer);
 				buffer += rightresult;
 
 			}
 
-			drawline2(r, "#ff0000", "左眼右");
-		}
+			drawline2(jsondata.eyes.左眼右, "#ff0000", "左眼右");
+
 
 
 
@@ -372,10 +444,13 @@
 			mouse.x = event.clientX;
 			mouse.y = event.clientY;
 			if (obj != null) {
-			
-				if (event.movementY == 1) {
+				
+
+				if (eyeindex == 0 || eyeindex == 1){
+					if (event.movementY == 1) {
 
 						if(obj.rotation.x<0.155500005){
+							obj.rotation.y = 0;
 							obj.rotation.x += 0.005;
 						}
 						
@@ -386,11 +461,32 @@
 				else if (event.movementY == -1) {
 				
 					if(obj.rotation.x> -0.18){
+						obj.rotation.y = 0;
 							obj.rotation.x -= 0.005;
 						}
 					
 					
 				}
+				}
+				else if(eyeindex == 2 || eyeindex == 3){
+					if(event.movementX == 1){
+										if(obj.rotation.y<0.225000000){
+										obj.rotation.x = 0;	
+										obj.rotation.y+= 0.005;
+										}
+										
+									}
+									else if(event.movementX == -1){
+										if(obj.rotation.y> -0.1400000000004){
+										obj.rotation.x = 0;		
+										obj.rotation.y-= 0.005;
+										}
+										
+									}
+				}
+				
+				 
+
 				console.log(obj.rotation);
 				
 			}
